@@ -85,6 +85,19 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
+function resolveRouteFromLocation(): string {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#/')) {
+    return hash.slice(1);
+  }
+  const pathname = window.location.pathname || '/';
+  const adminIndex = pathname.indexOf('/admin');
+  if (adminIndex !== -1) {
+    return pathname.slice(adminIndex);
+  }
+  return '/';
+}
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     try {
@@ -104,9 +117,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
-  const [currentPath, setCurrentPath] = useState<string>(() => {
-    return window.location.pathname || '/';
-  });
+  const [currentPath, setCurrentPath] = useState<string>(() => resolveRouteFromLocation());
 
   const [user, setUser] = useState<User | null>(null);
   const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
@@ -184,17 +195,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [siteSettings, language]);
 
-  // History API routing
+  // History & Hash API routing (supports GitHub Pages subpaths & standard root hosts)
   useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname || '/');
+    const handleRouteChange = () => {
+      setCurrentPath(resolveRouteFromLocation());
     };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+      window.removeEventListener('hashchange', handleRouteChange);
+    };
   }, []);
 
   const navigate = useCallback((path: string) => {
-    if (window.location.pathname !== path) {
+    const isGitHubPages =
+      window.location.hostname.endsWith('github.io') ||
+      (window.location.pathname !== '/' && !window.location.pathname.startsWith('/admin'));
+
+    if (isGitHubPages) {
+      window.location.hash = path === '/' ? '' : `#${path}`;
+    } else if (window.location.pathname !== path) {
       window.history.pushState({}, '', path);
     }
     setCurrentPath(path);
