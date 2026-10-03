@@ -1,0 +1,6 @@
+{
+  "name": "Company Pro – Enterprise Digital Engineering & Admin Platform",
+  "description": "Bilingual (English & Bangla) enterprise corporate platform and Super Admin CMS with real-time content management, service orchestration, media compression, and lead capture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

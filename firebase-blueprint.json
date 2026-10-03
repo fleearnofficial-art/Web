@@ -1,0 +1,488 @@
+{
+  "entities": {
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global bilingual website configuration, branding, hero content, about content, promotional video, and contact details.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for settings document (always 'main').",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "company_name": {
+          "type": "string",
+          "description": "Company name in English.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "company_name_bn": {
+          "type": "string",
+          "description": "Company name in Bangla.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "logo_url": {
+          "type": "string",
+          "description": "URL or compressed data URI for the company logo.",
+          "minLength": 0,
+          "maxLength": 250000
+        },
+        "hero_title_en": {
+          "type": "string",
+          "description": "Hero headline in English.",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "hero_title_bn": {
+          "type": "string",
+          "description": "Hero headline in Bangla.",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "hero_desc_en": {
+          "type": "string",
+          "description": "Hero description in English.",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "hero_desc_bn": {
+          "type": "string",
+          "description": "Hero description in Bangla.",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "hero_video_url": {
+          "type": "string",
+          "description": "Hero visual/video or Lottie JSON URL.",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "promo_video_url": {
+          "type": "string",
+          "description": "Promotional YouTube embed or watch URL.",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "about_title_en": {
+          "type": "string",
+          "description": "About section headline in English.",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "about_title_bn": {
+          "type": "string",
+          "description": "About section headline in Bangla.",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "about_desc_en": {
+          "type": "string",
+          "description": "About section body prose in English.",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "about_desc_bn": {
+          "type": "string",
+          "description": "About section body prose in Bangla.",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "about_image_url": {
+          "type": "string",
+          "description": "About section image URL or compressed data URI.",
+          "minLength": 0,
+          "maxLength": 250000
+        },
+        "contact_email": {
+          "type": "string",
+          "description": "Public contact email address.",
+          "minLength": 3,
+          "maxLength": 150,
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        },
+        "contact_phone": {
+          "type": "string",
+          "description": "Public contact phone number.",
+          "minLength": 3,
+          "maxLength": 60
+        },
+        "address_en": {
+          "type": "string",
+          "description": "Office physical address in English.",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "address_bn": {
+          "type": "string",
+          "description": "Office physical address in Bangla.",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "facebook_link": {
+          "type": "string",
+          "description": "Official Facebook page URL.",
+          "minLength": 0,
+          "maxLength": 300
+        },
+        "youtube_link": {
+          "type": "string",
+          "description": "Official YouTube channel URL.",
+          "minLength": 0,
+          "maxLength": 300
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "UID of the admin who last updated the settings.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of initial creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest modification."
+        }
+      },
+      "required": [
+        "id",
+        "company_name",
+        "company_name_bn",
+        "logo_url",
+        "hero_title_en",
+        "hero_title_bn",
+        "hero_desc_en",
+        "hero_desc_bn",
+        "hero_video_url",
+        "promo_video_url",
+        "about_title_en",
+        "about_title_bn",
+        "about_desc_en",
+        "about_desc_bn",
+        "about_image_url",
+        "contact_email",
+        "contact_phone",
+        "address_en",
+        "address_bn",
+        "facebook_link",
+        "youtube_link",
+        "updatedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ServiceItem": {
+      "title": "ServiceItem",
+      "description": "Bilingual service offering displayed in the Services grid and managed in the Admin Panel.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Document identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "icon_name": {
+          "type": "string",
+          "description": "Lucide icon identifier.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "title_en": {
+          "type": "string",
+          "description": "Service title in English.",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "title_bn": {
+          "type": "string",
+          "description": "Service title in Bangla.",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "description_en": {
+          "type": "string",
+          "description": "Service description in English.",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "description_bn": {
+          "type": "string",
+          "description": "Service description in Bangla.",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "order_number": {
+          "type": "number",
+          "description": "Display sort order index."
+        },
+        "is_active": {
+          "type": "boolean",
+          "description": "Whether this service is visible on the public website."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "UID of the admin who created the service.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update."
+        }
+      },
+      "required": [
+        "id",
+        "icon_name",
+        "title_en",
+        "title_bn",
+        "description_en",
+        "description_bn",
+        "order_number",
+        "is_active",
+        "authorId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Inbound lead inquiry submitted via the Contact form.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Sender full name.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "description": "Sender email address.",
+          "minLength": 3,
+          "maxLength": 150,
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        },
+        "message": {
+          "type": "string",
+          "description": "Inquiry message body.",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "status": {
+          "type": "string",
+          "description": "Workflow state of the message.",
+          "enum": ["unread", "read", "archived"],
+          "minLength": 4,
+          "maxLength": 16
+        },
+        "recipientRole": {
+          "type": "string",
+          "description": "Target role for query enforcement (always 'admin').",
+          "enum": ["admin"],
+          "minLength": 5,
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of submission."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of status update."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "status",
+        "recipientRole",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MediaAsset": {
+      "title": "MediaAsset",
+      "description": "Compressed image or media asset stored in site-assets media library.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique media asset ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "File display name.",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "url": {
+          "type": "string",
+          "description": "Compressed data URL or external asset path.",
+          "minLength": 1,
+          "maxLength": 350000
+        },
+        "category": {
+          "type": "string",
+          "description": "Asset classification (logo, hero, service, general).",
+          "enum": ["logo", "hero", "service", "general"],
+          "minLength": 4,
+          "maxLength": 20
+        },
+        "sizeBytes": {
+          "type": "number",
+          "description": "Compressed file size in bytes."
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "MIME type of the asset.",
+          "minLength": 3,
+          "maxLength": 60
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether asset is publicly visible in site-assets."
+        },
+        "uploadedBy": {
+          "type": "string",
+          "description": "UID of the admin who uploaded the asset.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of upload."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "url",
+        "category",
+        "sizeBytes",
+        "mimeType",
+        "isPublic",
+        "uploadedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Allowlisted Super Admin account with access to /admin.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "description": "Verified administrator email address.",
+          "minLength": 3,
+          "maxLength": 150,
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role designation (always 'admin').",
+          "enum": ["admin"],
+          "minLength": 5,
+          "maxLength": 10
+        },
+        "addedBy": {
+          "type": "string",
+          "description": "UID of the super admin who authorized this record.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of authorization."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest update."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "role",
+        "addedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/site_settings/{settingId}": {
+      "schema": {
+        "$ref": "#/entities/SiteSettings"
+      },
+      "description": "Singleton configuration collection storing bilingual site settings under document ID 'main'."
+    },
+    "/services/{serviceId}": {
+      "schema": {
+        "$ref": "#/entities/ServiceItem"
+      },
+      "description": "Collection of bilingual company services ordered by order_number."
+    },
+    "/messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/ContactMessage"
+      },
+      "description": "Inbound contact form inquiries containing PII, isolated to admins."
+    },
+    "/media/{mediaId}": {
+      "schema": {
+        "$ref": "#/entities/MediaAsset"
+      },
+      "description": "Public site-assets media library storing compressed images."
+    },
+    "/admins/{adminUid}": {
+      "schema": {
+        "$ref": "#/entities/AdminUser"
+      },
+      "description": "Allowlisted Super Admin directory keyed by Firebase Auth UID."
+    }
+  }
+}

@@ -1,0 +1,362 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // 1. GLOBAL SAFETY NET (Default-Deny Catch-All)
+    // =========================================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // 2. REUSABLE HARDENED PRIMITIVES
+    // =========================================================================
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerified() && request.auth.token.email == 'enrzxpvt@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // =========================================================================
+    // 3. ENTITY VALIDATION BLUEPRINTS (Anti-Update-Gap)
+    // =========================================================================
+    function isValidSiteSettings(data) {
+      return data.keys().hasAll([
+        'id', 'company_name', 'company_name_bn', 'logo_url',
+        'hero_title_en', 'hero_title_bn', 'hero_desc_en', 'hero_desc_bn',
+        'hero_video_url', 'promo_video_url',
+        'about_title_en', 'about_title_bn', 'about_desc_en', 'about_desc_bn', 'about_image_url',
+        'contact_email', 'contact_phone', 'address_en', 'address_bn',
+        'facebook_link', 'youtube_link', 'updatedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'company_name', 'company_name_bn', 'logo_url',
+        'hero_title_en', 'hero_title_bn', 'hero_desc_en', 'hero_desc_bn',
+        'hero_video_url', 'promo_video_url',
+        'about_title_en', 'about_title_bn', 'about_desc_en', 'about_desc_bn', 'about_image_url',
+        'contact_email', 'contact_phone', 'address_en', 'address_bn',
+        'facebook_link', 'youtube_link', 'updatedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      data.id == 'main' &&
+      data.company_name is string && data.company_name.size() >= 1 && data.company_name.size() <= 120 &&
+      data.company_name_bn is string && data.company_name_bn.size() >= 1 && data.company_name_bn.size() <= 120 &&
+      data.logo_url is string && data.logo_url.size() <= 250000 &&
+      data.hero_title_en is string && data.hero_title_en.size() >= 1 && data.hero_title_en.size() <= 200 &&
+      data.hero_title_bn is string && data.hero_title_bn.size() >= 1 && data.hero_title_bn.size() <= 200 &&
+      data.hero_desc_en is string && data.hero_desc_en.size() >= 1 && data.hero_desc_en.size() <= 600 &&
+      data.hero_desc_bn is string && data.hero_desc_bn.size() >= 1 && data.hero_desc_bn.size() <= 600 &&
+      data.hero_video_url is string && data.hero_video_url.size() <= 500 &&
+      data.promo_video_url is string && data.promo_video_url.size() <= 500 &&
+      data.about_title_en is string && data.about_title_en.size() >= 1 && data.about_title_en.size() <= 200 &&
+      data.about_title_bn is string && data.about_title_bn.size() >= 1 && data.about_title_bn.size() <= 200 &&
+      data.about_desc_en is string && data.about_desc_en.size() >= 1 && data.about_desc_en.size() <= 1200 &&
+      data.about_desc_bn is string && data.about_desc_bn.size() >= 1 && data.about_desc_bn.size() <= 1200 &&
+      data.about_image_url is string && data.about_image_url.size() <= 250000 &&
+      data.contact_email is string && data.contact_email.size() >= 3 && data.contact_email.size() <= 150 &&
+      data.contact_phone is string && data.contact_phone.size() >= 3 && data.contact_phone.size() <= 60 &&
+      data.address_en is string && data.address_en.size() >= 1 && data.address_en.size() <= 300 &&
+      data.address_bn is string && data.address_bn.size() >= 1 && data.address_bn.size() <= 300 &&
+      data.facebook_link is string && data.facebook_link.size() <= 300 &&
+      data.youtube_link is string && data.youtube_link.size() <= 300 &&
+      data.updatedBy is string && data.updatedBy.size() >= 1 && data.updatedBy.size() <= 128 &&
+      data.updatedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidServiceItem(data) {
+      return data.keys().hasAll([
+        'id', 'icon_name', 'title_en', 'title_bn',
+        'description_en', 'description_bn', 'order_number',
+        'is_active', 'authorId', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'icon_name', 'title_en', 'title_bn',
+        'description_en', 'description_bn', 'order_number',
+        'is_active', 'authorId', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      data.icon_name is string && data.icon_name.size() >= 1 && data.icon_name.size() <= 60 &&
+      data.title_en is string && data.title_en.size() >= 1 && data.title_en.size() <= 150 &&
+      data.title_bn is string && data.title_bn.size() >= 1 && data.title_bn.size() <= 150 &&
+      data.description_en is string && data.description_en.size() >= 1 && data.description_en.size() <= 600 &&
+      data.description_bn is string && data.description_bn.size() >= 1 && data.description_bn.size() <= 600 &&
+      data.order_number is number && data.order_number >= 0 && data.order_number <= 10000 &&
+      data.is_active is bool &&
+      data.authorId is string && data.authorId.size() >= 1 && data.authorId.size() <= 128 &&
+      data.authorId == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidContactMessage(data) {
+      return data.keys().hasAll([
+        'id', 'name', 'email', 'message', 'status', 'recipientRole', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'name', 'email', 'message', 'status', 'recipientRole', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 150 &&
+      data.message is string && data.message.size() >= 1 && data.message.size() <= 2000 &&
+      data.status is string && data.status.size() >= 4 && data.status.size() <= 16 &&
+      (data.status == 'unread' || data.status == 'read' || data.status == 'archived') &&
+      data.recipientRole is string && data.recipientRole == 'admin' &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidMediaAsset(data) {
+      return data.keys().hasAll([
+        'id', 'name', 'url', 'category', 'sizeBytes',
+        'mimeType', 'isPublic', 'uploadedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'name', 'url', 'category', 'sizeBytes',
+        'mimeType', 'isPublic', 'uploadedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      data.name is string && data.name.size() >= 1 && data.name.size() <= 150 &&
+      data.url is string && data.url.size() >= 1 && data.url.size() <= 350000 &&
+      data.category is string && (data.category == 'logo' || data.category == 'hero' || data.category == 'service' || data.category == 'general') &&
+      data.sizeBytes is number && data.sizeBytes >= 0 && data.sizeBytes <= 5000000 &&
+      data.mimeType is string && data.mimeType.size() >= 3 && data.mimeType.size() <= 60 &&
+      data.isPublic is bool &&
+      data.uploadedBy is string && data.uploadedBy.size() >= 1 && data.uploadedBy.size() <= 128 &&
+      data.uploadedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll([
+        'uid', 'email', 'role', 'addedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'email', 'role', 'addedBy', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.uid) &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 150 &&
+      data.role is string && data.role == 'admin' &&
+      data.addedBy is string && data.addedBy.size() >= 1 && data.addedBy.size() <= 128 &&
+      data.addedBy == request.auth.uid &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // =========================================================================
+    // 4. COLLECTION MATCH BLOCKS
+    // =========================================================================
+
+    //Singleton Site Settings (/site_settings/main)
+    match /site_settings/{settingId} {
+      allow get: if isValidId(settingId) && settingId == 'main';
+      allow list: if false;
+
+      allow create: if isSignedIn() && isVerified() &&
+        isValidId(settingId) && settingId == 'main' &&
+        isValidSiteSettings(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isSignedIn() && isVerified() &&
+        isValidId(settingId) && settingId == 'main' &&
+        isValidSiteSettings(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin() && (
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'company_name', 'company_name_bn', 'logo_url',
+            'hero_title_en', 'hero_title_bn', 'hero_desc_en', 'hero_desc_bn',
+            'hero_video_url', 'promo_video_url',
+            'about_title_en', 'about_title_bn', 'about_desc_en', 'about_desc_bn', 'about_image_url',
+            'contact_email', 'contact_phone', 'address_en', 'address_bn',
+            'facebook_link', 'youtube_link', 'updatedBy', 'updatedAt'
+          ])
+        );
+
+      allow delete: if false;
+    }
+
+    // Services Collection (/services/{serviceId})
+    match /services/{serviceId} {
+      allow get: if isValidId(serviceId) && (
+        existing().is_active == true || isAdmin()
+      );
+
+      // Zero get()/exists() in list: enforce via resource.data or verified admin token
+      allow list: if existing().is_active == true || (
+        isBootstrappedAdmin() && existing().id is string
+      ) || (
+        isVerified() && existing().authorId == request.auth.uid
+      );
+
+      allow create: if isSignedIn() && isVerified() &&
+        isValidId(serviceId) &&
+        incoming().id == serviceId &&
+        isValidServiceItem(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isSignedIn() && isVerified() &&
+        isValidId(serviceId) &&
+        isValidServiceItem(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().authorId == existing().authorId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin() && (
+          // Action 1: Reorder or toggle active status
+          incoming().diff(existing()).affectedKeys().hasOnly(['order_number', 'is_active', 'updatedAt']) ||
+          // Action 2: Full service content edit
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'icon_name', 'title_en', 'title_bn',
+            'description_en', 'description_bn', 'order_number',
+            'is_active', 'updatedAt'
+          ])
+        );
+
+      allow delete: if isSignedIn() && isVerified() &&
+        isValidId(serviceId) &&
+        isAdmin();
+    }
+
+    // Contact Messages Collection (/messages/{messageId}) - PII Isolated
+    match /messages/{messageId} {
+      allow get: if isSignedIn() && isVerified() &&
+        isValidId(messageId) &&
+        isAdmin();
+
+      // Zero get()/exists() in list: only verified admin matching recipientRole
+      allow list: if isBootstrappedAdmin() && existing().recipientRole == 'admin';
+
+      // Public contact form submission with strict validation and server timestamps
+      allow create: if isValidId(messageId) &&
+        incoming().id == messageId &&
+        isValidContactMessage(incoming()) &&
+        incoming().status == 'unread' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      // Action-based update with Terminal State Locking + Admin override
+      allow update: if isSignedIn() && isVerified() &&
+        isValidId(messageId) &&
+        isValidContactMessage(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().name == existing().name &&
+        incoming().email == existing().email &&
+        incoming().message == existing().message &&
+        incoming().recipientRole == existing().recipientRole &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (existing().status != 'archived' || isAdmin()) &&
+        isAdmin() && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+        );
+
+      allow delete: if isSignedIn() && isVerified() &&
+        isValidId(messageId) &&
+        isAdmin();
+    }
+
+    // Media Assets Collection (/media/{mediaId}) - site-assets library
+    match /media/{mediaId} {
+      allow get: if isValidId(mediaId) && (
+        existing().isPublic == true || isAdmin()
+      );
+
+      allow list: if existing().isPublic == true || (
+        isBootstrappedAdmin() && existing().id is string
+      ) || (
+        isVerified() && existing().uploadedBy == request.auth.uid
+      );
+
+      allow create: if isSignedIn() && isVerified() &&
+        isValidId(mediaId) &&
+        incoming().id == mediaId &&
+        isValidMediaAsset(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isSignedIn() && isVerified() &&
+        isValidId(mediaId) &&
+        isValidMediaAsset(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().uploadedBy == existing().uploadedBy &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin() && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['name', 'category', 'isPublic', 'updatedAt'])
+        );
+
+      allow delete: if isSignedIn() && isVerified() &&
+        isValidId(mediaId) &&
+        isAdmin();
+    }
+
+    // Admins Allowlist Collection (/admins/{adminUid}) - PII Isolated
+    match /admins/{adminUid} {
+      allow get: if isSignedIn() && isVerified() &&
+        isValidId(adminUid) && (
+          request.auth.uid == adminUid || isAdmin()
+        );
+
+      allow list: if isBootstrappedAdmin() && existing().role == 'admin';
+
+      allow create: if isSignedIn() && isVerified() &&
+        isValidId(adminUid) &&
+        incoming().uid == adminUid &&
+        isValidAdminUser(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isSignedIn() && isVerified() &&
+        isValidId(adminUid) &&
+        isValidAdminUser(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().addedBy == existing().addedBy &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin() && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['email', 'updatedAt'])
+        );
+
+      allow delete: if isSignedIn() && isVerified() &&
+        isValidId(adminUid) &&
+        adminUid != request.auth.uid &&
+        isAdmin();
+    }
+  }
+}
